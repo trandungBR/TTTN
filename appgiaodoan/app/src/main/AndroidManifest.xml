@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
-            android:name=".views.dangki"
+            android:name=".views.trangchu"
             android:exported="true">
 
             <intent-filter>
@@ -23,6 +23,9 @@
         </activity>
         <activity android:name=".views.xacthucotp" android:exported="true"/>
         <activity android:name=".views.nhapmatkhau" android:exported="true"/>
+        <activity android:name=".views.dangki" android:exported="true"/>
+        <activity android:name=".views.dangnhap" android:exported="true"/>
+        <activity android:name=".views.timKiem" android:exported="true"/>
     </application>
 
 </manifest>

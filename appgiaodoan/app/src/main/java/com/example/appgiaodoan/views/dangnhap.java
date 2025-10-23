@@ -1,6 +1,10 @@
 package com.example.appgiaodoan.views;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -9,33 +13,96 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.appgiaodoan.R;
+import com.example.appgiaodoan.controllers.mainControllers;
 
-public class dangnhap extends AppCompatActivity{
-    private EditText etMailOrSDT, etPass;
+public class dangnhap extends AppCompatActivity implements mainControllers.AuthViewListener {
+
+    private EditText etSDT, etPass;
     private Button bDangNhap;
-    private TextView tvDangKi;
-    String SUPABASE_URL = "https://hkjqvbgrjqxenugjuhni.supabase.co";
-    String SUPABASE_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhranF2YmdyanF4ZW51Z2p1aG5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk5MTkyOTksImV4cCI6MjA3NTQ5NTI5OX0.T5kJg5aMeXH17BUAf_BpmacgU-GC77y44V-s4xswi44";
+    private TextView tvDangKi, tvOTP;
+
+    private mainControllers mMainController;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dangnhap);
-        etMailOrSDT = findViewById(R.id.etMailOrSDT);
+
+        etSDT = findViewById(R.id.etSDT);
+        etPass = findViewById(R.id.etPass);
         bDangNhap = findViewById(R.id.bDangNhap);
         tvDangKi = findViewById(R.id.tvDangKi);
-        etPass= findViewById(R.id.etPass);
-        bDangNhap.setOnClickListener(v ->{
-            String tenDangNhap = etMailOrSDT.getText().toString().trim();
+        tvOTP = findViewById(R.id.tvOTP);
 
-            if (tenDangNhap.isEmpty()){
-                Toast.makeText(this,"Vui lòng nhập đầy đủ thông tin!",Toast.LENGTH_SHORT).show();
-            }
+        mMainController = new mainControllers();
+
+        bDangNhap.setOnClickListener(v -> {
+            String sdt = etSDT.getText().toString().trim();
+            String matKhau = etPass.getText().toString().trim();
+
+            mMainController.dangNhap(sdt, matKhau, this);
         });
+
         tvDangKi.setOnClickListener(view -> {
-            Toast.makeText(this, "Chuyển sang trang đăng kí", Toast.LENGTH_SHORT).show();
-            Intent i = new Intent(dangnhap.this, dangki.class);
-            startActivity(i);
+            mMainController.chuyenTrangDangKi(this);
         });
 
+        tvOTP.setOnClickListener(view -> {
+            boolean dangLaOTPMode = mMainController.chinhTrangThaiDangNhap();
+            chinhGiaoDienOTP(dangLaOTPMode);
+        });
+    }
+
+    private void chinhGiaoDienOTP(boolean laOTPMode) {
+        if (laOTPMode) {
+            etPass.setVisibility(View.GONE);
+            tvOTP.setText("Đăng nhập bằng mật khẩu");
+            etPass.setText("");
+        } else {
+            etPass.setVisibility(View.VISIBLE);
+            tvOTP.setText("Đăng nhập bằng otp");
+        }
+    }
+    private void runOnUIThread(Runnable runnable) {
+        new Handler(Looper.getMainLooper()).post(runnable);
+    }
+
+    @Override
+    public void showLoading(boolean isLoading) {
+        runOnUIThread(() -> {
+            bDangNhap.setEnabled(!isLoading);
+            bDangNhap.setText(isLoading ? "Đang xử lý..." : "Đăng nhập");
+        });
+    }
+
+    @Override
+    public void showError(String message) {
+        runOnUIThread(() ->
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        );
+    }
+
+    @Override
+    public void showSuccess(String message) {
+        runOnUIThread(() -> {
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            dieuHuong(trangchu.class);
+        });
+    }
+
+    @Override
+    public void dieuHuong(Class<?> activityClass, String... extras) {
+        runOnUIThread(() -> {
+            Intent intent = new Intent(this, activityClass);
+            if (extras.length > 0 && extras.length % 2 == 0) {
+                for (int i = 0; i < extras.length; i += 2) {
+                    intent.putExtra(extras[i], extras[i + 1]);
+                }
+            }
+            if (activityClass == trangchu.class) {
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            }
+            startActivity(intent);
+        });
     }
 }

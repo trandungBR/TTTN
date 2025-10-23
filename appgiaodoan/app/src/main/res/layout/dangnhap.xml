@@ -17,11 +17,11 @@
         android:textStyle="bold" />
 
     <EditText
-        android:id="@+id/etMailOrSDT"
+        android:id="@+id/etSDT"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="74dp"
-        android:hint="Email/Số điện thoại"
+        android:hint="Số điện thoại"
         android:inputType="text"
         android:layout_marginBottom="16dp" />
 
@@ -32,7 +32,18 @@
         android:hint="Mật khẩu"
         android:inputType="textPassword"
         android:drawableEnd="@drawable/ic_eye_close"
-        android:layout_marginBottom="24dp" />
+        android:layout_marginBottom="12dp" />
+
+
+    <TextView
+        android:id="@+id/tvOTP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Đăng nhập bằng otp"
+        android:layout_gravity="end"
+        android:textColor="#007BFF"
+        android:textSize="14sp"
+        android:layout_marginBottom="20dp" />
 
     <Button
         android:id="@+id/bDangNhap"
